@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Chat System</title>
+    <style>
+        :root {
+            --primary-bg: #121212;
+            --secondary-bg: #1e1e1e;
+            --accent-color: #ff6d00;
+            --accent-light: #ff9e40;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background-color: var(--secondary-bg);
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .header h1 {
+            margin: 0;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+        
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 1rem;
+            overflow: hidden;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .message {
+            margin-bottom: 1rem;
+            padding: 0.8rem 1rem;
+            border-radius: 18px;
+            max-width: 80%;
+            line-height: 1.4;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .user-message {
+            background-color: var(--accent-color);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .bot-message {
+            background-color: #2e2e2e;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #444;
+        }
+        
+        .message-time {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 0.3rem;
+            text-align: right;
+        }
+        
+        .input-area {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        #user-input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: none;
+            border-radius: 20px;
+            background-color: #2a2a2a;
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        #user-input:focus {
+            box-shadow: 0 0 0 2px var(--accent-light);
+        }
+        
+        #send-button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 0 1.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #send-button:hover {
+            background-color: var(--accent-light);
+        }
+        
+        #send-button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+        
+        .typing-indicator {
+            display: inline-block;
+            padding: 0.8rem 1rem;
+            background-color: #2e2e2e;
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #444;
+        }
+        
+        .typing-dots {
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .typing-dots span {
+            height: 8px;
+            width: 8px;
+            margin: 0 2px;
+            background-color: var(--text-secondary);
+            border-radius: 50%;
+            display: inline-block;
+            animation: typing 1.4s infinite both;
+        }
+        
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #2a2a2a;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-light);
+        }
+
+        /* News item styling */
+        .news-item {
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #444;
+            padding-bottom: 1rem;
+        }
+
+        .news-item:last-child {
+            border-bottom: none;
+        }
+
+        .news-title {
+            font-weight: 600;
+            color: var(--accent-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .news-summary {
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .news-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .news-link:hover {
+            text-decoration: underline;
+        }
+
+        .section-title {
+            font-weight: 600;
+            color: var(--accent-light);
+            margin: 1rem 0 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Agent Chat System</h1>
+    </div>
+    
+    <div class="chat-container">
+        <div class="chat-messages" id="chat-messages">
+            <!-- Example user message -->
+            <div class="message user-message">
+                <div>What are the latest news updates?</div>
+                <div class="message-time">10:30 AM</div>
+            </div>
+            
+            <!-- Example bot response with news items -->
+            <div class="message bot-message">
+                <div class="section-title">Latest News Updates:</div>
+                
+                <div class="news-item">
+                    <div class="news-title">Cyberattack on Los Angeles School District</div>
+                    <div class="news-summary">A significant cyberattack has led to the shutdown of computer systems in the Los Angeles School District. This incident highlights the growing threat of cyberattacks on U.S. schools, with several high-profile cases reported recently.</div>
+                    <a href="https://www.huffpost.com/entry/ap-us-los-angeles-schools-cyberattack_n_63184088e4b046aa022f1bd4" class="news-link" target="_blank">Read more</a>
+                </div>
+                
+                <div class="news-item">
+                    <div class="news-title">Amazon's New 'Blade Runner 2099' Series</div>
+                    <div class="news-summary">Amazon has announced a new limited series, "Blade Runner 2099," produced by Ridley Scott. This series is a continuation of the iconic sci-fi franchise, with contributions from the original 1982 film's director and a writer from the 2017 sequel.</div>
+                    <a href="https://www.huffpost.com/entry/blade-runner-2099-series-announced_n_63247adfe4b027aa40656cc0" class="news-link" target="_blank">Read more</a>
+                </div>
+                
+                <div class="news-item">
+                    <div class="news-title">'French Spider-Man' Climbs Skyscraper for 60th Birthday</div>
+                    <div class="news-summary">Alain Robert, known as the "French Spider-Man," celebrated his 60th birthday by climbing a massive skyscraper. Robert is famous for scaling iconic buildings like the Burj Khalifa and the Empire State Building.</div>
+                    <a href="https://www.huffpost.com/entry/french-spiderman-birthday-skyscraper-climb_n_6326a369e4b082746beadd58" class="news-link" target="_blank">Read more</a>
+                </div>
+                
+                <div class="section-title">LinkedIn Post:</div>
+                <div class="news-item">
+                    <div class="news-summary">🚨 A significant cyberattack has led to the shutdown of computer systems in the Los Angeles School District. This incident underscores the growing threat of cyberattacks on U.S. schools, with several high-profile cases reported recently. How can educational institutions better protect themselves?</div>
+                    <a href="https://www.huffpost.com/entry/ap-us-los-angeles-schools-cyberattack_n_63184088e4b046aa022f1bd4" class="news-link" target="_blank">Read more</a>
+                </div>
+                
+                <div class="message-time">10:30 AM</div>
+            </div>
+        </div>
+        
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Type your message here..." autocomplete="off">
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatMessages = document.getElementById('chat-messages');
+            const userInput = document.getElementById('user-input');
+            const sendButton = document.getElementById('send-button');
+            
+            // Function to add a message to the chat
+            function addMessage(text, isUser) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+                
+                const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                messageDiv.innerHTML = `
+                    <div>${text}</div>
+                    <div class="message-time">${time}</div>
+                `;
+                
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Function to show typing indicator
+            function showTyping() {
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'message bot-message typing-indicator';
+                typingDiv.id = 'typing-indicator';
+                typingDiv.innerHTML = `
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                `;
+                chatMessages.appendChild(typingDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Function to hide typing indicator
+            function hideTyping() {
+                const typingIndicator = document.getElementById('typing-indicator');
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+            }
+            
+            // Function to send message to backend
+            async function sendMessage() {
+                const message = userInput.value.trim();
+                if (!message) return;
+                
+                // Add user message to chat
+                addMessage(message, true);
+                userInput.value = '';
+                
+                // Show typing indicator
+                showTyping();
+                sendButton.disabled = true;
+                
+                try {
+                    // Send to your FastAPI endpoint
+                    const response = await fetch('/query', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ query: message })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Remove typing indicator and add bot response
+                    hideTyping();
+                    addMessage(data.data, false);
+                } catch (error) {
+                    hideTyping();
+                    addMessage("Sorry, I encountered an error. Please try again later.", false);
+                    console.error('Error:', error);
+                } finally {
+                    sendButton.disabled = false;
+                    userInput.focus();
+                }
+            }
+            
+            // Event listeners
+            sendButton.addEventListener('click', sendMessage);
+            
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            // Focus input on load
+            userInput.focus();
+        });
+    </script>
+</body>
+</html>
