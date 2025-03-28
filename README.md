@@ -11,8 +11,8 @@ A Retrieval-Augmented Generation (RAG) system that answers queries by retrieving
 - **Autogen Agents**: AI-powered agents for processing and generation tasks
 
 ## Steps To Run The Project
-# Run pip install -r requirements.txt
-# Run docker compose up to start weaviate and olama
-# Run data.py to get the data and save in Weaviate DB
-# Autogen Agents are present in Agents Folder
-# To run the project run uvicorn main:app
+1) Run pip install -r requirements.txt
+2) Run docker compose up to start weaviate and olama
+3) Run data.py to get the data and save in Weaviate DB
+4) Autogen Agents are present in Agents Folder
+5) To run the project run uvicorn main:app
