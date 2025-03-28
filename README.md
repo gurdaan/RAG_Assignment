@@ -10,14 +10,9 @@ A Retrieval-Augmented Generation (RAG) system that answers queries by retrieving
 - **Weaviate Vector Database**: Efficient storage and retrieval of news embeddings
 - **Autogen Agents**: AI-powered agents for processing and generation tasks
 
-## Prerequisites
-
-- Python 3.9+
-- Weaviate database (local or cloud)
-- OpenAI API key (or alternative LLM provider)
-- Kaggle account (for dataset access)
-
-## Data Procesing Pipeline is in Data_Processing Folder
-# 1) Run data.py to get the data and save in Weaviate DB
-# 2) Autogen Agents are present in Agents Folder
-# 3) To run the project run uvicorn main:app
+## Steps To Run The Project
+# Run pip install -r requirements.txt
+# Run docker compose up to start weaviate and olama
+# Run data.py to get the data and save in Weaviate DB
+# Autogen Agents are present in Agents Folder
+# To run the project run uvicorn main:app
