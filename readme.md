@@ -16,3 +16,5 @@ A Retrieval-Augmented Generation (RAG) system that answers queries by retrieving
 3) Run data.py to get the data and save in Weaviate DB
 4) Autogen Agents are present in Agents Folder
 5) To run the project run uvicorn main:app
+
+   ![Short Demo](demo.gif)
